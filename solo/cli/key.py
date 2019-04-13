@@ -25,6 +25,34 @@ def key():
     """Interact with Solo keys, see subcommands."""
     pass
 
+@click.group()
+def nrng():
+    """Access TNRNG on key, see subcommands."""
+    pass
+
+
+@click.command()
+@click.option("--count", default=8, help="How many bytes to generate (defaults to 8)")
+@click.option("-s", "--serial", help="Serial number of Solo to use")
+def nhexbytes(count, serial):
+    """Output COUNT number of random bytes, hex-encoded."""
+    if not 0 <= count <= 255:
+        print(f"Number of bytes must be between 0 and 255, you passed {count}")
+        sys.exit(1)
+
+    print(solo.client.find(serial).get_nrng(count).hex())
+
+
+@click.command()
+@click.option("-s", "--serial", help="Serial number of Solo to use")
+def nraw(serial):
+    """Output raw entropy endlessly."""
+    p = solo.client.find(serial)
+    while True:
+        r = p.get_nrng(255)
+        sys.stdout.buffer.write(r)
+
+
 
 @click.group()
 def rng():
@@ -195,6 +223,9 @@ def wink(serial, udp):
 key.add_command(rng)
 rng.add_command(hexbytes)
 rng.add_command(raw)
+key.add_command(nrng)
+nrng.add_command(nhexbytes)
+nrng.add_command(nraw)
 key.add_command(reset)
 key.add_command(update)
 key.add_command(probe)

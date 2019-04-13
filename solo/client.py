@@ -192,6 +192,10 @@ class SoloClient:
         ret = self.send_data_hid(SoloBootloader.HIDCommandRNG, struct.pack("B", num))
         return ret
 
+    def get_nrng(self, num=0):
+        ret = self.send_data_hid(SoloBootloader.HIDCommandNRNG, struct.pack("B", num))
+        return ret
+
     def verify_flash(self, sig):
         """
         Tells device to check signature against application.  If it passes,
